@@ -33,7 +33,7 @@ int run2_1(std::string s, std::string sa) {
         ss >> n >> m;
 
     int* a = new int[n];
-    int* b = new int[n];
+    int* b = new int[m];
 
     if (s.empty())
         for (int i = 0; i < n; i++)
