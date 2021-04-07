@@ -1,4 +1,3 @@
-#pragma once
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -6,29 +5,10 @@
 #define out_of_heap_range 2;
 #define empty_heap 1;
 
-void test2_1();
-void test4_3();
-void test_heap();
-
-int run2_1(std::string s = "", std::string a = "");
-int BinarySearch(const int* a, int len, int el);
-
-void run4_3(std::string s, std::string sa);
-
 template <typename T>
 class Comparator {
 public:
     virtual bool operator()(const T& l, const T& r)
-    {
-        return l < r;
-    }
-};
-
-// TODO: change T to time
-template <typename T>
-class MinHeapComparator: Comparator<T> {
-public:
-    bool operator()(const T& l, const T& r) override
     {
         return l < r;
     }
@@ -70,8 +50,8 @@ void Heap<T>::sift_up(size_t i) {
         throw out_of_heap_range;
     while (i > 0) {
         size_t upper = (i - 1) / 2;
-        if (!_cmp(_heap[i], _heap[upper]))  // все в таком порядке, каком нужно
-                                          // для минхипа родитель меньше, либо равен потомку
+        if (!_cmp(_heap[i], _heap[upper]))  // РІСЃРµ РІ С‚Р°РєРѕРј РїРѕСЂСЏРґРєРµ, РєР°РєРѕРј РЅСѓР¶РЅРѕ
+                                          // РґР»СЏ РјРёРЅС…РёРїР° СЂРѕРґРёС‚РµР»СЊ РјРµРЅСЊС€Рµ, Р»РёР±Рѕ СЂР°РІРµРЅ РїРѕС‚РѕРјРєСѓ
             return;
         std::swap(_heap[i], _heap[upper]);
         i = upper;
@@ -155,4 +135,25 @@ void Heap<T>::print() {
 template <typename T>
 size_t Heap<T>::size() {
     return _heap.size();
+}
+
+int main()
+{
+	int n = 0;
+	std::cin >> n;
+	int cnt = 0;
+	Comparator<int> std_cmp;
+	Heap<int> h(std_cmp);
+	for (int i = 0; i < n; i++) {
+		int arival = 0;
+		int departure = 0;
+		std::cin >> arival >> departure;
+		h.insert(departure);
+		while (arival > h.peek_top())
+			h.extract_top();
+		if (cnt < h.size())
+			cnt = h.size();
+	}
+	std::cout << cnt << std::endl;
+	return 0;
 }
