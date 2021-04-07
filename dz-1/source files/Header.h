@@ -60,10 +60,10 @@ private:
 
 template <typename T>
 void Heap<T>::sift_up(size_t i) {
-    if (i >= _heap.size())
-        throw out_of_heap_range;
     if (_heap.empty())
         return;
+    if (i >= _heap.size())
+        throw out_of_heap_range;
     while (i > 0) {
         size_t upper = (i - 1) / 2;
         if (!_cmp(_heap[i], _heap[upper]))  // все в таком порядке, каком нужно
@@ -76,10 +76,10 @@ void Heap<T>::sift_up(size_t i) {
 
 template <typename T>
 void Heap<T>::sift_down(size_t i) {
+    if (_heap.empty())
+        return; 
     if (i >= _heap.size())
         throw out_of_heap_range;
-    if (_heap.empty())
-        return;
     size_t l = i * 2 + 1;
     size_t r = i * 2 + 2;
     int changeble = i;
@@ -122,8 +122,7 @@ T Heap<T>::extract_top() {
     T res = _heap[0];
     _heap[0] = _heap.back();
     _heap.pop_back();
-    if (!_heap.empty())
-        sift_down(0);
+    sift_down(0);
     return res;
 }
 
