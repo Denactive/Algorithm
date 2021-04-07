@@ -3,6 +3,8 @@
 int main()
 {
     setlocale(LC_ALL, "RUS");
-    run2_1();
+    std::cout << "Задача 2.1\n";
+    //run2_1();
+    test2_1();
     return 0;
 }
