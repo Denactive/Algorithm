@@ -1,0 +1,58 @@
+#include <iostream>
+
+template <typename T>
+class Comparator {
+public:
+    virtual bool operator()(const T& l, const T& r)
+    {
+        return l < r;
+    }
+};
+
+template <typename T>
+int partion(int* a, int len, Comparator<T> cmp) {
+	// [p...ji]
+	int p = rand() % len;
+	std::swap(a[p], a[0]);
+	int i = len - 1;
+	int j = len - 1;  // j < i
+	//  • Итератор (индекс) i указывает на начало группы элементов, меньших либо равных опорному.
+	//	• Итератор j меньше i, итератор j указывает на последений нерассмотренный элемент.
+	while (j != 0) {
+		if (cmp(a[0], a[j])) {
+			std::swap(a[i], a[j]);
+			i--;
+		}
+		j--;
+	}
+	std::swap(a[0], a[i]);
+	return i;
+}
+
+int main()
+{
+	int n = 0;
+	int k = 0;
+	std::cin >> n >> k;
+
+	int* a = new int[n];
+	for (int i = 0; i < n; i++)
+		std::cin >> a[i];
+
+	int cnt = -1;
+	Comparator<int> std_cmp;
+	int r_border = n;
+	int l_border = 0;
+
+	while (cnt != k) {
+		cnt = l_border + partion(a + l_border, r_border - l_border, std_cmp);
+		if (k < cnt)
+			r_border = cnt;
+		if (k > cnt)
+			l_border = cnt;
+	}
+	std::cout << a[cnt];
+
+	delete[] a;
+    return 0;
+}

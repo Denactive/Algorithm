@@ -14,9 +14,11 @@ void test_heap();
 int run2_1(std::string s = "", std::string a = "");
 int BinarySearch(const int* a, int len, int el);
 
+template <typename T> class Comparator;
 void run4_3(std::string s, std::string sa);
 
-int partion(int* a, int len);
+template <typename T>
+int partion(int* a, int len, Comparator<T> cmp);
 void run6_4(std::string s, std::string sa);
 
 template <typename T>
