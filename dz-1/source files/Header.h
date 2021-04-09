@@ -8,12 +8,16 @@
 
 void test2_1();
 void test4_3();
+void test6_4();
 void test_heap();
 
 int run2_1(std::string s = "", std::string a = "");
 int BinarySearch(const int* a, int len, int el);
 
 void run4_3(std::string s, std::string sa);
+
+int partion(int* a, int len);
+void run6_4(std::string s, std::string sa);
 
 template <typename T>
 class Comparator {
@@ -86,7 +90,7 @@ void Heap<T>::sift_down(size_t i) {
         throw out_of_heap_range;
     size_t l = i * 2 + 1;
     size_t r = i * 2 + 2;
-    int changeble = i;
+    size_t changeble = i;
     if (l < _heap.size() && !_cmp(_heap[changeble], _heap[l]))
         changeble = l;
     if (r < _heap.size() &&!_cmp(_heap[changeble], _heap[r]))
@@ -136,7 +140,7 @@ void Heap<T>::print() {
         std::cout << "heap is empty\n";
         return;
     }
-    int k = 2;
+    size_t k = 2;
     for (size_t i = 0; i < _heap.size() - 1; ++i) {
         std::cout << _heap[i];
         if (i == 0) std::cout << '.';

@@ -30,7 +30,7 @@ void run4_3(std::string s, std::string sa) {
 	else
 		ss >> n;
 
-	int cnt = 0;
+	size_t cnt = 0;
 	Comparator<int> std_cmp;
 	Heap<int> h(std_cmp);
 	for (int i = 0; i < n; i++) {
