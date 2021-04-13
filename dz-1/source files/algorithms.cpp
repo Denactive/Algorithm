@@ -4,8 +4,8 @@ int main()
 {
     setlocale(LC_ALL, "RUS");
     std::cout << "Задача 1.4\n";
-    run1_4();
-    //test1_4();
+    //run1_4();
+    test1_4();
 
     //std::cout << "Задача 2.1\n";
     //run2_1();

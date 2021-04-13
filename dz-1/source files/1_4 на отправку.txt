@@ -1,0 +1,60 @@
+https://contest.yandex.ru/contest/25759/run-report/50656109/
+
+#include <iostream>
+#include <vector>
+
+typedef struct ListNode {
+    int value;
+    ListNode* next;
+    ListNode* prev;
+};
+
+typedef struct List {
+    ListNode* beg = NULL;
+    int num_nodes = 0;
+};
+
+void list_add(List& st, int val) {
+    ListNode* node = new ListNode;
+    node->value = val;
+    if (st.num_nodes == 0) {
+        st.beg = node;
+        node->next = node;
+        node->prev = node;
+    }
+    else {
+        node->next = st.beg;
+        node->prev = st.beg->prev;
+        st.beg->prev->next = node;
+        st.beg->prev = node;
+    }
+    st.num_nodes++;
+}
+
+int list_pop_node(List& st, ListNode* node) {
+    if (node == st.beg)
+        st.beg = st.beg->next;
+    node->prev->next = node->next;
+    node->next->prev = node->prev;
+    st.num_nodes--;
+    int res = node->value;
+    delete node;
+    return res;
+}
+
+int main () {
+	int n = 0;
+    int k = 0;
+    std::cin >> n >> k;
+
+    List l;
+    for (int j = 0; j < n; j++)
+        list_add(l, j + 1);
+
+    for (auto i = l.beg; l.num_nodes != 1;) {
+        for (int j = 0; j < k; j++)
+            i = i->next;
+        list_pop_node(l, i->prev);
+    }
+	std::cout << list_pop_node(l, l.beg);
+}
