@@ -1,9 +1,7 @@
 #include "header.h"
 
-void print(int* a, int n);
-
 template <typename T>
-int partion(int* a, int len, Comparator<T> cmp) {
+int partition(int* a, int len, Comparator<T> cmp) {
 	// [p...ji]
 	int p = rand() % len;
 	std::swap(a[p], a[0]);
@@ -54,7 +52,7 @@ void run6_4(std::string s, std::string sa) {
 
 	while (cnt != k) {
 		std::cout << "l: " << l_border << " len: " << r_border - l_border << std::endl;
-		cnt = l_border + partion(a + l_border, r_border - l_border, std_cmp);
+		cnt = l_border + partition(a + l_border, r_border - l_border, std_cmp);
 		if (k < cnt) {
 			r_border = cnt;
 		}
@@ -93,7 +91,7 @@ void test6_4() {
 		run6_4(cases[i], answers[i]);
 }
 
-void print(int* a, int n) {
+void print(const int* a, int n) {
 	for (int i = 0; i < n; ++i)
 		std::cout << a[i] << ' ';
 	std::cout << std::endl;

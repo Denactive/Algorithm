@@ -1,6 +1,8 @@
 #include "header.h"
 
 int BinarySearch(const int* a, int len, int el) {
+    std::cout << "bin search "<< el <<" in array: ";
+    print(a, len);
     int beg = 0;
     int end = len;
     while (beg < end) {
@@ -46,7 +48,7 @@ int run2_1(std::string s, std::string sa) {
     for (int i = 0; i < m; i++) {
         if (s.empty()) std::cin >> b[i]; else ss >> b[i];
 
-        if (prev_res < 0) {
+        /*if (prev_res < 0) {
             prev_res = BinarySearch(a, n, b[i]);
         }
         else {
@@ -60,11 +62,30 @@ int run2_1(std::string s, std::string sa) {
                 else
                     prev_res += tmp;
             }
+        }*/
+        int k = 1;
+        // если больше, то надо заключить это число в левый подмассив
+            // после увеличения длина экспоненциального массива 2(2к) - 1 не превысит длину массива
+            // и левый элемент текущего экспоненциального массива (с индексом к-1) меньше требуемого
+        //while (4 * k - 1 <= n && a[k - 1] < b[i])
+        while (2 * k - 1 < n && a[2*k - 2] < b[i])
+            k *= 2;
+
+        // если не смогли увеличить, то искать в текущем экспоненциальном массиве до конца
+        // число элементов длина экспоненциального массива (2k-1) минус длина данного
+        if (2 * k - 1 >= n) {
+            //k /= 2;
+            prev_res = BinarySearch(a + k - 1, n - k + 1, b[i]);
         }
+        else
+        // иначе искать от левого элемента увеличенного экспоненциального массива (k - 1)
+        // до его правого элемента (2k-2), т.е. на массиве длиной k
+            prev_res = BinarySearch(a + k - 1, k, b[i]);
+
         if (prev_res < 0)
             std::cout << n;
         else
-            std::cout << prev_res;
+            std::cout << k - 1 + prev_res;
         if (i != m - 1) std::cout << ' '; else std::cout << '\n';
     }
     std::cout << "correct is: " << sa << std::endl;

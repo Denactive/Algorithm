@@ -18,8 +18,9 @@ template <typename T> class Comparator;
 void run4_3(std::string s, std::string sa);
 
 template <typename T>
-int partion(int* a, int len, Comparator<T> cmp);
+int partition(int* a, int len, Comparator<T> cmp);
 void run6_4(std::string s, std::string sa);
+void print(const int* a, int n);
 
 template <typename T>
 class Comparator {
