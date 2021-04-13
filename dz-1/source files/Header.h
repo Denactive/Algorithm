@@ -6,10 +6,29 @@
 #define out_of_heap_range 2;
 #define empty_heap 1;
 
+void test1_4();
 void test2_1();
 void test4_3();
 void test6_4();
 void test_heap();
+
+void run1_4(std::string s = "", std::string sa = "");
+
+typedef struct ListNode {
+    int value;
+    ListNode* next;
+    ListNode* prev;
+};
+
+typedef struct List {
+    ListNode* beg = NULL;
+    int num_nodes = 0;
+};
+
+void print_list(ListNode* list);
+void list_add(List& st, int val);
+int list_pop_node(List& st);
+int list_pop(List& st, int i);
 
 int run2_1(std::string s = "", std::string a = "");
 int BinarySearch(const int* a, int len, int el);
