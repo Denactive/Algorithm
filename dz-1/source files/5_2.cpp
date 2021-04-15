@@ -1,5 +1,4 @@
 #include "Header.h"
-#include <vector>
 #include <string>
 
 template <typename T, typename Comparator>
@@ -69,7 +68,6 @@ void run5_2(std::string s, std::string sa) {
 	else
 		ss >> n;
 	
-	//std::vector<std::pair<date, date>> a;
     //std::pair<date, date>* a = new std::pair<date, date>[n]; // 18-ти летия 
     date* a = new date [n]; // 18-ти летия 
     date* b = new date [n]; // смерти и 80-ти летия
@@ -136,6 +134,7 @@ void run5_2(std::string s, std::string sa) {
     while (i[0] < size && i[1] < size) {
         std::cout << current_alive << ' ' << max_alive << '\n';
         if (date_cmp(a[i[0]], b[i[1]])) {
+            std::cout << "+ " << a[i[0]].d << ' '<< a[i[0]].m << ' ' << a[i[0]].y << std::endl;
             current_alive++;
             i[0]++;
             if (current_alive > max_alive)
@@ -143,10 +142,12 @@ void run5_2(std::string s, std::string sa) {
             continue;
         }
         if (a[i[0]].d == b[i[1]].d && a[i[0]].m == b[i[1]].m && a[i[0]].y == b[i[1]].y) {
+            std::cout << "= " << a[i[0]].d << ' ' << a[i[0]].m << ' ' << a[i[0]].y << std::endl;
             i[0]++;
             i[1]++;
         }
         else {
+            std::cout << "- " << b[i[1]].d << ' ' << b[i[1]].m << ' ' << b[i[1]].y << std::endl;
             current_alive--;
             i[1]++;
         }
@@ -156,6 +157,7 @@ void run5_2(std::string s, std::string sa) {
     std::cout << max_alive;
 	std::cout << "\ncorrect is: " << sa << std::endl;
     delete[] a;
+    delete[] b;
 }
 
 void test5_2() {
@@ -170,7 +172,7 @@ void test5_2() {
 	};
 	std::string answers[] = {
 		"3\n",
-        "7\n",
+        "8\n",
 
 	};
 	for (int i = 0; i < test_amount; i++)
