@@ -11,6 +11,7 @@ void test2_1();
 void test4_3();
 void test5_2();
 void test6_4();
+void test7_3();
 void test_heap();
 
 void run1_4(std::string s = "", std::string sa = "");
@@ -222,3 +223,5 @@ template <typename T>
 size_t Heap<T>::size() {
     return _heap.size();
 }
+
+void run7_3(std::string s = "", std::string sa = "");

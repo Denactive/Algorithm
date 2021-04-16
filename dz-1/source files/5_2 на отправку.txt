@@ -1,5 +1,6 @@
+https://contest.yandex.ru/contest/25759/run-report/50724624/
 #include <iostream>
-#include <string>
+#include <cstring>
 
 typedef struct {
     short d;
@@ -105,6 +106,9 @@ int main() {
     
     int current_alive = 0;
     int max_alive = 0;
+
+    merge_sort<date, DateComparator>(a, size);
+    merge_sort<date, DateComparator>(b, size);
 
     int i[2] = { 0, 0 };
     while (i[0] < size && i[1] < size) {

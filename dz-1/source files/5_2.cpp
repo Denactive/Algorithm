@@ -67,8 +67,12 @@ void run5_2(std::string s, std::string sa) {
 		std::cin >> n;
 	else
 		ss >> n;
+
+    if (n == 0) {
+        std::cout << 0;
+        return;
+    }
 	
-    //std::pair<date, date>* a = new std::pair<date, date>[n]; // 18-ти летия 
     date* a = new date [n]; // 18-ти летия 
     date* b = new date [n]; // смерти и 80-ти летия
     int size = 0;
@@ -84,7 +88,6 @@ void run5_2(std::string s, std::string sa) {
 		tmp.y += 18;
 		if (date_cmp(tmp, death)) {
 			std::cout << "adding: " << tmp.d << ' ' << tmp.m << ' ' << tmp.y << " - "<< death.d << ' ' << death.m << ' ' << death.y << " to vector" << std::endl;
-			//a[size] = std::pair<date, date>(tmp, death);
             a[size] = tmp;
             tmp.y += 62;
             if (date_cmp(death, tmp))
@@ -94,38 +97,9 @@ void run5_2(std::string s, std::string sa) {
             size++;
 		}
 	}
-    /*
-    std::cout << "\n--------------------------\nbefore sort: " << std::endl;
-    for (int i = 0; i < size; ++i) {
-        std::cout << a[i].first.d << ' ' << a[i].first.m << ' ' << a[i].first.y << " - ";
-        std::cout << a[i].second.d << ' ' << a[i].second.m << ' ' << a[i].second.y << std::endl;
-    }
-    merge_sort<std::pair<date, date>, DatePairComparator>(a, size);
-    std::cout << "after sort: " << std::endl;
-    for (int i = 0; i < size; ++i) {
-        std::cout << a[i].first.d << ' ' << a[i].first.m << ' ' << a[i].first.y << " - ";
-        std::cout << a[i].second.d << ' ' << a[i].second.m << ' ' << a[i].second.y << std::endl;
-    }
-    std::cout << "--------------------------" << std::endl;
-    */
-    std::cout << "\n--------------------------\nbefore sort: " << std::endl;
-    std::cout << "18:\n";
-        for (int i = 0; i < size; ++i)
-            std::cout << a[i].d << ' ' << a[i].m << ' ' << a[i].y << std::endl;
-    std::cout << "80 / d:\n";
-    for (int i = 0; i < size; ++i)
-        std::cout << b[i].d << ' ' << b[i].m << ' ' << b[i].y << std::endl;
-   
+    
     merge_sort<date, DateComparator>(a, size);
     merge_sort<date, DateComparator>(b, size);
-    std::cout << "after sort: " << std::endl;
-    std::cout << "18:\n";
-    for (int i = 0; i < size; ++i)
-        std::cout << a[i].d << ' ' << a[i].m << ' ' << a[i].y << std::endl;
-    std::cout << "80 / d:\n";
-    for (int i = 0; i < size; ++i)
-        std::cout << b[i].d << ' ' << b[i].m << ' ' << b[i].y << std::endl;
-    std::cout << "--------------------------" << std::endl;
 
     int current_alive = 0;
     int max_alive = 0;
@@ -161,20 +135,44 @@ void run5_2(std::string s, std::string sa) {
 }
 
 void test5_2() {
-	int test_amount = 2;
-	std::string cases[] = {
-		"3 2 5 1980 13 11 2055\n1 1 1982 1 1 2030\n2 1 1920 2 1 2000\n",
+    int test_amount = 12;
+    std::string cases[] = {
+        "3 2 5 1980 13 11 2055\n1 1 1982 1 1 2030\n2 1 1920 2 1 2000\n",
         "12 2 5 1980 13 11 2055\n\
             1 1 1982 1 1 2030\n1 1 1982 1 1 2030\n1 1 1982 1 1 2030\n1 1 1982 1 1 2030\n1 1 1982 1 1 2030\n\
             1 2 1982 1 1 2030\n2 1 1982 1 1 2030\n3 1 1982 1 1 2030\n1 3 1982 1 1 2030\n1 1 1982 1 1 2030\n\
             2 1 1920 2 1 2000\n",
+        "3 0 0 0   0 0 5\n0 0 10   31 12 18\n0 0 1920   0 0 1920\n",
+        "3 0 0 0   0 0 5\n0 0 0   31 12 17\n0 0 1920   0 0 1920\n",
+        "3 0 0 0   0 0 5\n0 0 10   0 0 50\n0 0 1920   0 0 2000\n",
+        "2 0 0 0   0 0 20\n0 0 2   0 0 50\n",
+        "2 0 0 0   0 0 20\n31 12 0   0 0 50\n",
+        "4 0 0 0   0 0 20\n5 0 0   5 0 50\n 0 0 0   0 0 21\n 0 0 0   0 0 21\n",
+        "3 0 0 0   0 0 30\n0 0 5   5 0 50\n 0 0 58   0 0 80\n",
+        "3 0 0 0   0 0 30\n0 0 5   5 0 50\n 0 0 32   0 0 80\n",
+        "3 0 0 0   0 0 50\n0 0 5   5 0 50\n 0 0 31   0 0 80\n",
+        "3 0 0 0   0 0 21\n0 0 1   0 0 23\n 0 0 2   0 0 22\n",
 
-	};
-	std::string answers[] = {
-		"3\n",
+
+    };
+    std::string answers[] = {
+        "3\n",
         "8\n",
+        "0 - no add case\n",
+        "0 - умер до 18-летия\n",
+        "1 - 2 интервала не пересекаются\n",
+        "1 - пограничный случай. 1 стало 18 лет, другой помер\n",
+        "2 - пограничный случай. 1 стало 18 лет, другой помер на денб позже\n",
+        "4 - интервалы пересекаются\n",
+        "2 - 2 интервала пересекутся, третий - нет\n",
+        "2 - \n",
+        "3 - \n",
+        "3 - \n",
 
-	};
-	for (int i = 0; i < test_amount; i++)
-		run5_2(cases[i], answers[i]);
+    };
+    for (int i = 0; i < test_amount; i++) {
+        std::cout << "\nTEST "<< i+1 <<" --------------------------" << std::endl;
+
+        run5_2(cases[i], answers[i]);
+    }
 }
