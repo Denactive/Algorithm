@@ -1,21 +1,25 @@
-#include "header.h"
+#include <iostream>
+#include <sstream>
+#include <vector>
 
-#define DEBUG 1
+void test1_2();
+void run1_2();
+
+#define DEBUG 0
 const size_t INITIAL_CAPACITY = 8;
 const double MAX_ALPHA = 0.75;
-
 
 class StringHasher {
 public:
     StringHasher(size_t prime = 71)
-    : prime(prime)
+        : prime(prime)
     {
     }
-    
-    size_t operator()(const std::string &str)
+
+    size_t operator()(const std::string& str)
     {
         size_t hash = 0;
-        for (const auto &c: str)
+        for (const auto& c : str)
         {
             hash = hash * prime + c;
         }
@@ -24,6 +28,29 @@ public:
 private:
     size_t prime;
 };
+
+class StringHasher71 {
+public:
+    size_t operator()(const std::string &str)
+    {
+        size_t hash = 0;
+        for (const auto &c: str)
+            hash = hash * 71 + c;
+        return hash;
+    }
+};
+
+class StringHasher47 {
+public:
+    size_t operator()(const std::string& str)
+    {
+        size_t hash = 0;
+        for (const auto& c : str)
+            hash = hash * 47 + c;
+        return hash;
+    }
+};
+
 template <typename T>
 class KeyWords {
 public:
@@ -37,7 +64,7 @@ public:
     std::string del = "D";
 };
 
-template <typename T, typename Hasher>
+template <typename T, typename Hasher1, typename Hasher2>
 class HashTable
 {
 public:
@@ -62,12 +89,13 @@ private:
     
     std::vector<T> table;
     size_t size;
-    Hasher get_hash;
+    Hasher1 get_hash1;
+    Hasher2 get_hash2;
     KeyWords<T> key_words;
 };
 
-template <typename T, typename Hasher>
-bool HashTable<T, Hasher>::Add(const T& key)
+template <typename T, typename Hasher1, typename Hasher2>
+bool HashTable<T, Hasher1, Hasher2>::Add(const T& key)
 {
     if (DEBUG)
         std::cout << "adding " << key << std::endl;
@@ -75,30 +103,32 @@ bool HashTable<T, Hasher>::Add(const T& key)
     if (size >= table.size() * MAX_ALPHA)
     {
         if (DEBUG)
-            std::cout << "expansion: " << size << '/' << table.size() << " = " << (double(size) / table.size()) << " >= " << MAX_ALPHA << std::endl;
+            std::cout << "\texpansion: " << size << '/' << table.size() << " = " << (double(size) / table.size()) << " >= " << MAX_ALPHA << std::endl;
         grow();
     }
-    // TODO: reduce
+    // TODO: reduce | не особо нужно, конечно
 
-    size_t hash = get_hash(key);
+    size_t hash1 = get_hash1(key);
+    size_t hash2 = get_hash2(key);
+    size_t hash = hash1;
     size_t first_del = table.size();
 
     if (DEBUG)
-        std::cout << "first hash: " << hash << " | pos: " << hash % table.size() << std::endl;
+        std::cout << "\tfirst hash: " << hash << " | pos: " << hash % table.size() << std::endl;
 
     for (size_t i = 0; i < table.size() && table[hash % table.size()] != key_words.nil; ++i)
     {
         if (table[hash % table.size()] == key)
             return false;
         
-        if (first_del != table.size() && table[hash % table.size()] == key_words.del)
+        if (first_del == table.size() && table[hash % table.size()] == key_words.del)
             first_del = hash % table.size();
 
         // probe
-        hash = (hash + (i + 1) * (2 * hash + 1));
+        //hash = (hash + (i + 1) * (2 * hash + 1));
+        hash = hash1 + (i + 1) * (2 * hash2 + 1);
         if (DEBUG)
-            std::cout << "hash: " << hash << " | pos: " << hash % table.size() << std::endl;
-
+            std::cout << "\thash: " << hash << " | pos: " << hash % table.size() << std::endl;
     }
 
     if (first_del != table.size())
@@ -110,26 +140,29 @@ bool HashTable<T, Hasher>::Add(const T& key)
     return true;
 }
 
-template <typename T, typename Hasher>
-bool HashTable<T, Hasher>::Has(const T& key)
+template <typename T, typename Hasher1, typename Hasher2>
+bool HashTable<T, Hasher1, Hasher2>::Has(const T& key)
 {
-    size_t hash = get_hash(key);
+    size_t hash1 = get_hash1(key);
+    size_t hash2 = get_hash2(key);
+    size_t hash = hash1;
      
     for (size_t i = 0; i < table.size() && table[hash % table.size()] != key_words.nil; ++i) {
         
         if (table[hash % table.size()] == key)
             return true;
 
-        hash = hash + (i + 1) * (2 * hash + 1);
+        hash = hash1 + (i + 1) * (2 * hash2 + 1);
     }
     return false;
 }
 
-
-template <typename T, typename Hasher>
-bool HashTable<T, Hasher>::Remove(const T& key)
+template <typename T, typename Hasher1, typename Hasher2>
+bool HashTable<T, Hasher1, Hasher2>::Remove(const T& key)
 {
-    size_t hash = get_hash(key);
+    size_t hash1 = get_hash1(key);
+    size_t hash2 = get_hash2(key);
+    size_t hash = hash1;
 
     for (size_t i = 0; i < table.size() && table[hash % table.size()] != key_words.nil; ++i) {
 
@@ -139,14 +172,14 @@ bool HashTable<T, Hasher>::Remove(const T& key)
             return true;
         }
 
-        hash = (hash + (i + 1) * (2 * hash + 1));
+        //hash = (hash + (i + 1) * (2 * hash + 1));
+        hash = hash1 + (i + 1) * (2 * hash2 + 1);
     }
     return false;
 }
 
-
-template <typename T, typename Hasher>
-void HashTable<T, Hasher>::grow()
+template <typename T, typename Hasher1, typename Hasher2>
+void HashTable<T, Hasher1, Hasher2>::grow()
 {
     std::vector<T> table_copy;
     std::vector<T> new_table(table.size() * 2, key_words.nil);
@@ -157,23 +190,24 @@ void HashTable<T, Hasher>::grow()
         table_copy.push_back(table[i]);
     }
     table = std::move(new_table);
+    size = 0;
 
     for (size_t i = 0; i < table_copy.size(); i++)
         this->Add(table_copy[i]);
 }
 
-template <typename T, typename Hasher>
-void HashTable<T, Hasher>::print()
+template <typename T, typename Hasher1, typename Hasher2>
+void HashTable<T, Hasher1, Hasher2>::print()
 {
     for (int i = 0; i < table.size(); i++)
     {
-        std::cout << "[" << i << "]: " << table[i] << std::endl;
+        std::cout << "\t[" << i << "]: " << table[i] << std::endl;
     }
 }
 
-void run1_2(std::string input) {
+void run1_2() {
     StringOptions so;
-    HashTable<std::string, StringHasher> table(so.nil, so.del);
+    HashTable<std::string, StringHasher71, StringHasher47> table(so.nil, so.del);
     char op;
     std::string str;
     
@@ -211,4 +245,156 @@ void run1_2(std::string input) {
             }
         }
     }
+}
+
+void test1_2() {
+    const int n = 4;
+    std::string input[] = {
+        "+ hello\n\
+            + bye\n\
+            ? bye\n\
+            + bye\n\
+            - bye\n\
+            ? bye\n\
+            ? hello\n",
+        "? smtg\n\
+            + smtg\n\
+            ? smtg\n\
+            - smtg\n\
+            ? smtg\n",
+        "+ a\n\
+            + a\n\
+            + b\n\
+            ? a\n\
+            ? b\n\
+            - a\n\
+            - a\n\
+            ? a\n\
+            ? b\n\
+            - b\n\
+            ? b\n\
+            ? a\n\
+            + a\n\
+            ? a\n\
+            - a\n\
+            ? a\n",
+        "\
+            + abcd\n\
+            + abdc\n\
+            + acdb\n\
+            + acbd\n\
+            + adcb\n\
+            + adbc\n\
+            + bacd\n\
+            + badc\n\
+            ? abcd\n\
+            ? abdc\n\
+            ? acdb\n\
+            ? acbd\n\
+            ? adcb\n\
+            ? adbc\n\
+            ? bacd\n\
+            ? badc\n\
+            - abcd\n\
+            - abdc\n\
+            - acdb\n\
+            - acbd\n\
+            - adcb\n\
+            - adbc\n\
+            - bacd\n\
+            - badc\n\
+            ? abcd\n\
+            ? abdc\n\
+            ? acdb\n\
+            ? acbd\n\
+            ? adcb\n\
+            ? adbc\n\
+            ? bacd\n\
+            ? badc\n\
+        "
+    };
+    std::string answers[] = {
+        "\
+            OK\n\
+            OK\n\
+            OK\n\
+            FAIL\n\
+            OK\n\
+            FAIL\n\
+            OK\n",
+        "\
+            FAIL\n\
+            OK\n\
+            OK\n\
+            OK\n\
+            FAIL\n",
+        "\
++ a OK\n\
++ a FAIL\n\
++ b OK\n\
+? a OK\n\
+? b OK\n\
+- a OK\n\
+- a FAIL\n\
+? a FAIL\n\
+? b OK\n\
+- b OK\n\
+? b FAIL\n\
+? a FAIL\n\
++ a OK\n\
+? a OK\n\
+- a OK\n\
+? a FAIL\n",
+"OK\nOK\nOK\nOK\nOK\nOK\nOK\nOK\n   \nOK\nOK\nOK\nOK\nOK\nOK\nOK\nOK\n     \nOK\nOK\nOK\nOK\nOK\nOK\nOK\nOK\n     \nFAIL\nFAIL\nFAIL\nFAIL\nFAIL\nFAIL\nFAIL\nFAIL\n"
+    };
+
+    for (int i = 0; i < n; ++i) {
+        StringOptions so;
+        HashTable<std::string, StringHasher71, StringHasher47> table(so.nil, so.del);
+        char op;
+        std::string str;
+
+        std::stringstream ss(input[i]);
+
+        while (ss >> op)
+        {
+            switch (op)
+            {
+            case '+':
+            {
+                ss >> str;
+                std::cout << (table.Add(str) ? "OK" : "FAIL") << std::endl;
+                break;
+            }
+            case '?':
+            {
+                ss >> str;
+                std::cout << (table.Has(str) ? "OK" : "FAIL") << std::endl;
+                break;
+            }
+            case '-':
+            {
+                ss >> str;
+                std::cout << (table.Remove(str) ? "OK" : "FAIL") << std::endl;
+                break;
+            }
+            }
+        }
+        std::cout << "\n==============\nanswer: \n" << answers[i] << "===================\n";
+    }
+}
+
+int main(int argc, const char* argv[])
+{
+    setlocale(LC_ALL, "RUS");
+    std::cout << "Задача 1.2\n";
+    //run1_2();
+    test1_2();
+    //std::cout << "Задача 2.1\n";
+    //run2_1();
+    //test2_1();
+    //std::cout << "Задача 3.1\n";
+    //std::cout << "Задача 4.2\n";
+
+    return 0;
 }

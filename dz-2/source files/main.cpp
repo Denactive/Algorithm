@@ -1,11 +1,10 @@
-﻿#include "header.h"
-
+﻿/*
 int main(int argc, const char* argv[])
 {
     setlocale(LC_ALL, "RUS");
     std::cout << "Задача 1.2\n";
-    run1_2();
-    //test1_2();
+    //run1_2();
+    test1_2();
     //std::cout << "Задача 2.1\n";
     //run2_1();
     //test2_1();
@@ -13,4 +12,4 @@ int main(int argc, const char* argv[])
     //std::cout << "Задача 4.2\n";
 
     return 0;
-}
+}*/
