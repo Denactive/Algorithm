@@ -257,7 +257,7 @@ std::string GetSolution(const std::array<char, FieldSize> &field)
 
 
 // TODO: test str
-void run_2() {
+void run_4() {
     std::array<char, FieldSize> field = {2, 3, 1, 4, 5, 6, 7, 8, 0};
     std::cout << GetSolution(field) << std::endl;
 }

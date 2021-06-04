@@ -7,6 +7,7 @@
 #include <cassert>
 #include <deque>
 #include <set>
+#include <sstream>
 
 struct IGraph {
     virtual ~IGraph() {}
@@ -74,18 +75,53 @@ private:
 
 
 struct MatrixGraph : IGraph {
+    MatrixGraph(size_t size): adjacencyMatrix(size, std::vector<bool>(size, 0))
+    {
+    }
+
     ~MatrixGraph() {}
 
-    // Добавление ребра от from к to.
-    void AddEdge(int from, int to) = 0;
+    void AddEdge(int from, int to) {
+        assert(0 <= from && from < adjacencyMatrix.size());
+        assert(0 <= to && to < adjacencyMatrix.size());
+        adjacencyMatrix[from][to] = true;
+    }
 
-    int VerticesCount() const = 0;
+    int VerticesCount() const { return adjacencyMatrix.size(); }
 
-    std::vector<int> GetNextVertices(int vertex) const = 0;
-    std::vector<int> GetPrevVertices(int vertex) const = 0;
+    std::vector<int> GetNextVertices(int vertex) const {
+        assert(0 <= vertex && vertex < adjacencyMatrix[0].size());
+        std::vector<int> res;
+
+        for (size_t i = 0; i < adjacencyMatrix[vertex].size(); ++i)
+            if (adjacencyMatrix[vertex][i])
+                res.push_back(i);
+
+        return res;
+    };
+
+    std::vector<int> GetPrevVertices(int vertex) const {
+        assert(0 <= vertex && vertex < adjacencyMatrix.size());
+        std::vector<int> res;
+
+        for (size_t i = 0; i < adjacencyMatrix.size(); ++i)
+            if (adjacencyMatrix[i][vertex])
+                res.push_back(i);
+
+        return res;
+    }
+
+    friend std::ostream& operator<< (std::ostream& out, const MatrixGraph& obj) {
+        for (size_t i = 0; i < obj.adjacencyMatrix.size(); ++i) {
+            for (size_t j = 0; j < obj.adjacencyMatrix[i].size(); ++j)
+                out << obj.adjacencyMatrix[i][j] << " ";
+            out << std::endl;
+        }
+        return out;
+    }
 
 private:
-    std::vector<std::vector<int>> adjacencyLists;
+    std::vector<std::vector<bool>> adjacencyMatrix;
 };
 
 struct ArcGraph : IGraph {
@@ -259,22 +295,28 @@ std::deque<int> topologicalSort(const IGraph &graph)
     return sorted;
 }
 
-void run_1() {
+void run_1(std::string str = "") {
+    std::stringstream ss(str);
+
+    int n = 0, v = 0;
+    if (str.empty())
+        std::cin >> v >> n;
+    else
+        ss >> v >> n;
+
+    std::vector<std::pair<int, int>> input(n);
+    for (int i = 0; i < n; ++i)
+        if (str.empty())
+            std::cin >> input[i].first >> input[i].second;
+        else
+            ss >> input[i].first >> input[i].second;
+
     // списки смежности
     std::cout << "\tAdjacency Lists Graph:\n";
-    ListGraph graph(7);
-    graph.AddEdge(0, 1);
-    graph.AddEdge(0, 5);
-    graph.AddEdge(1, 2);
-    graph.AddEdge(1, 3);
-    graph.AddEdge(1, 5);
-    graph.AddEdge(1, 6);
-    graph.AddEdge(3, 2);
-    graph.AddEdge(3, 4);
-    graph.AddEdge(3, 6);
-    graph.AddEdge(5, 4);
-    graph.AddEdge(5, 6);
-    graph.AddEdge(6, 4);
+    ListGraph graph(v);
+
+    for (int i = 0; i < n; ++i)
+        graph.AddEdge(input[i].first, input[i].second);
     
     mainBFS(graph, [](int vertex){ std::cout << vertex << " ";});
     std::cout << std::endl;
@@ -282,34 +324,34 @@ void run_1() {
     std::cout << std::endl;
     
     for (int vertex: topologicalSort(graph))
-    {
         std::cout << vertex << " ";
-    }
     std::cout << std::endl;
     
-    // MatrixGraph matrixGraph(graph);
-    // std::cout << matrixGraph.GetVerticesCount() << std::endl;
-    // mainBFS(matrixGraph, [](int vertex){ std::cout << vertex << " ";});
-    // std::cout << std::endl;
-    // mainDFS(matrixGraph, [](int vertex){ std::cout << vertex << " ";});
-    // std::cout << std::endl;
+    // MatrixGraph
+    std::cout << "\tMatrix Graph:\n";
+    MatrixGraph matrix_graph(v);
+    
+    for (int i = 0; i < n; ++i)
+        matrix_graph.AddEdge(input[i].first, input[i].second);
+    //std::cout << matrix_graph;
+
+    mainBFS(matrix_graph, [](int vertex) { std::cout << vertex << " "; });
+    std::cout << std::endl;
+    mainDFS(matrix_graph, [](int vertex) { std::cout << vertex << " "; });
+    std::cout << std::endl;
+
+    for (int vertex : topologicalSort(matrix_graph))
+        std::cout << vertex << " ";
+    std::cout << std::endl;
+
     
     // ArcGraph arcGraph(matrixGraph);
     // ...
     std::cout << "\tArc Graph:\n";
-    ArcGraph arc_graph(7);
-    arc_graph.AddEdge(0, 1);
-    arc_graph.AddEdge(0, 5);
-    arc_graph.AddEdge(1, 2);
-    arc_graph.AddEdge(1, 3);
-    arc_graph.AddEdge(1, 5);
-    arc_graph.AddEdge(1, 6);
-    arc_graph.AddEdge(3, 2);
-    arc_graph.AddEdge(3, 4);
-    arc_graph.AddEdge(3, 6);
-    arc_graph.AddEdge(5, 4);
-    arc_graph.AddEdge(5, 6);
-    arc_graph.AddEdge(6, 4);
+    ArcGraph arc_graph(v);
+
+    for (int i = 0; i < n; ++i)
+       arc_graph.AddEdge(input[i].first, input[i].second);
 
     mainBFS(arc_graph, [](int vertex) { std::cout << vertex << " "; });
     std::cout << std::endl;
@@ -326,18 +368,8 @@ void run_1() {
     // ...
     std::cout << "\tSet Graph:\n";
     SetGraph set_graph(7);
-    set_graph.AddEdge(0, 1);
-    set_graph.AddEdge(0, 5);
-    set_graph.AddEdge(1, 2);
-    set_graph.AddEdge(1, 3);
-    set_graph.AddEdge(1, 5);
-    set_graph.AddEdge(1, 6);
-    set_graph.AddEdge(3, 2);
-    set_graph.AddEdge(3, 4);
-    set_graph.AddEdge(3, 6);
-    set_graph.AddEdge(5, 4);
-    set_graph.AddEdge(5, 6);
-    set_graph.AddEdge(6, 4);
+    for (int i = 0; i < n; ++i)
+        set_graph.AddEdge(input[i].first, input[i].second);
 
     mainBFS(set_graph, [](int vertex) { std::cout << vertex << " "; });
     std::cout << std::endl;
@@ -345,8 +377,21 @@ void run_1() {
     std::cout << std::endl;
 
     for (int vertex : topologicalSort(set_graph))
-    {
         std::cout << vertex << " ";
-    }
     std::cout << std::endl;
+}
+
+
+void test_1() {
+    const int n = 1;
+    std::string input[] = {
+        "7 12 0 1 0 5 1 2 1 3 1 5 1 6 3 2 3 4 3 6 5 4 5 6 6 4"
+    };
+    std::string answers[] = {
+        "0 1 5 2 3 6 4\n0 1 2 3 4 6 5\n0 1 5 3 6 4 2"
+    };
+    for (int i = 0; i < n; ++i) {
+        run_1(input[i]);
+        std::cout << "\nanswer:\n" << answers[i] << '\n' << std::endl;
+    }
 }
