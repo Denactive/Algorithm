@@ -1,12 +1,10 @@
-#pragma once
-
 #define BUILD_LISTGRAPH 1
 #define BUILD_ROUTES 0
 #define BUILD_OPTIMUM_ROUTE 0
 
-void run_1();
-void run_2();
-void run_3();
+#include "list_graph.h"
+#include "dsu.h"
+#include "8game.h"
 
 int main() {
 	if (BUILD_LISTGRAPH)
