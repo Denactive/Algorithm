@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef list_graph_h
+#define list_graph_h
+
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -395,3 +398,5 @@ void test_1() {
         std::cout << "\nanswer:\n" << answers[i] << '\n' << std::endl;
     }
 }
+
+#endif  // list_graph_h

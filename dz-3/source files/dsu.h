@@ -80,7 +80,7 @@ std::ostream& operator<<(std::ostream &out, DSU &dsu)
     }
     return out;
 }
-void run_3() {
+void run_dsu() {
     DSU dsu(10);
     std::cout << dsu << std::endl;
     
