@@ -114,7 +114,7 @@ void run_3(std::string input = "") {
     // можно было использовать Map
     // first - приоритет, second - вершина
     std::set<std::pair<int, int>, priority_comparator> priority_q;
-    //std::queue<int> q;
+    bool found = false;
 
     priority_q.insert({ 0, beg });
     visited[beg] = true;
@@ -138,14 +138,14 @@ void run_3(std::string input = "") {
         priority_q.erase(cur);
 
         if (cur.second == end) {
-            std::cout << "\nShortest path is " << cur.first << std::endl;
+            std::cout << cur.first;
+            std::cout << std::endl;
+            found = true;
             break;
         }
 
         for (int next : graph.GetNextVertices(cur.second))
         {
-            //if (!visited[next])
-            //{
             visited[next] = true;
             std::pair<int, int> to_insert = { cur.first + graph.GetWeight(cur.second, next), next };
             if (DEBUG3) std::cout << "inserting (" << to_insert.first << ", " << next << ")\n";
@@ -161,13 +161,14 @@ void run_3(std::string input = "") {
                     break;
                 }
             priority_q.insert(to_insert);
-            //}
         }
     }
+    if (!found)
+        std::cout << "\nno path\n";
 }
 
 void test_3() {
-    const int n = 5;
+    const int n = 8;
     std::string input[] = {
         //"6 7\n0 1\n0 2\n0 3\n3 5\n2 4\n1 4\n 5 4 0 4\n",
         //"4 3\n0 1\n0 2\n1 3\n0 3",
@@ -210,14 +211,30 @@ void test_3() {
         "6 8 \
          0 1 1 0 2 2 0 3 3 0 4 4 \
          1 5 4 2 5 3 3 5 2 4 5 1 \
-         0 5"
+         0 5",
+        "4 5 \
+         0 3 3 \
+         0 1 1 \
+         0 2 5 \
+         1 3 1 \
+         2 1 1 \
+         0 3",
+        "10 0 \
+         0 1",
+        "4 4 \
+         0 1 0 0 2 0 1 3 0 2 3 0 \
+         0 3"
+        // на отрицательнеых путях не работает
     };
     std::string answers[] = {
         "12",
         "9",
         "11",
         "2",
-        "5"
+        "5",
+        "2",
+        "none",
+        "0"
     };
     for (int i = 0; i < n; ++i) {
         std::cout << "=><======== [" << i << "] ========><=" << std::endl;
