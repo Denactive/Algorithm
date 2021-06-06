@@ -18,7 +18,15 @@ struct WeightedMatrixGraph : IGraph {
     void AddEdge(int from, int to, int cost) {
         assert(0 <= from && from < adjacencyMatrix.size());
         assert(0 <= to && to < adjacencyMatrix.size());
-        adjacencyMatrix[from][to] = cost;
+        // не добавляем петли
+        if (from == to)
+            return;
+        // не добавляем более дорогие пути-дубликаты
+        if (cost < adjacencyMatrix[from][to]) {
+            adjacencyMatrix[from][to] = cost;
+            // граф не ориентированный
+            adjacencyMatrix[to][from] = cost;
+        }
     }
 
     int VerticesCount() const override { return adjacencyMatrix.size(); }
@@ -117,7 +125,6 @@ void run_3(std::string input = "") {
     bool found = false;
 
     priority_q.insert({ 0, beg });
-    visited[beg] = true;
 
     while (!priority_q.empty())
     {
@@ -137,6 +144,12 @@ void run_3(std::string input = "") {
         auto cur = *priority_q.begin();
         priority_q.erase(cur);
 
+        if (visited[cur.second])
+            continue;
+
+        visited[cur.second] = true;
+
+
         if (cur.second == end) {
             std::cout << cur.first;
             std::cout << std::endl;
@@ -146,7 +159,6 @@ void run_3(std::string input = "") {
 
         for (int next : graph.GetNextVertices(cur.second))
         {
-            visited[next] = true;
             std::pair<int, int> to_insert = { cur.first + graph.GetWeight(cur.second, next), next };
             if (DEBUG3) std::cout << "inserting (" << to_insert.first << ", " << next << ")\n";
             // проверяем, выгоднее ли новый путь
@@ -168,7 +180,7 @@ void run_3(std::string input = "") {
 }
 
 void test_3() {
-    const int n = 8;
+    const int n = 10;
     std::string input[] = {
         //"6 7\n0 1\n0 2\n0 3\n3 5\n2 4\n1 4\n 5 4 0 4\n",
         //"4 3\n0 1\n0 2\n1 3\n0 3",
@@ -223,8 +235,19 @@ void test_3() {
          0 1",
         "4 4 \
          0 1 0 0 2 0 1 3 0 2 3 0 \
-         0 3"
-        // на отрицательнеых путях не работает
+         0 3",
+        // на отрицательнеых путях не работает, но работает если все метки отрицательные
+        "4 4 \
+         0 1 -1 0 2 -2 \
+         1 3 -2 \
+         2 3 -2 \
+         0 3",
+        "6 9 \
+         0 3 1 0 4 2 \
+         1 2 7 1 3 2 1 4 3 1 5 3 \
+         2 5 3 \
+         3 4 4 3 5 6\
+         0 2"
     };
     std::string answers[] = {
         "12",
@@ -234,7 +257,9 @@ void test_3() {
         "5",
         "2",
         "none",
-        "0"
+        "0",
+        "-4",
+        "9"
     };
     for (int i = 0; i < n; ++i) {
         std::cout << "=><======== [" << i << "] ========><=" << std::endl;
